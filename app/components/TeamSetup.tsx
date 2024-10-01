@@ -19,7 +19,7 @@ export default function TeamSetup() {
                 link: componentLink,
                 onEvent: (event: any, data: any) => {
                     console.log("team setup event!", event);
-                    if (event === "asdf") {
+                    if (event === "continue") {
                         handler.close();
                         setCurrentStep("tax_setup");
                     }
