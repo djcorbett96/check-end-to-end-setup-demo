@@ -1,15 +1,16 @@
 'use client'
 
 import { useEffect } from "react";
-import { fetchCompponentUrl } from "../utils/fetchComponentUrl";
-import { usePageContext } from "../utils/usePageContext";
+import { fetchCompponentUrl } from "@/lib/fetchComponentUrl";
+import { usePageContext } from "@/lib/usePageContext";
+import { useRouter } from 'next/navigation'
 
 let handler: any = undefined;
 let loaded: boolean = false;
 
 
-export default function ConnectBankAccount() {
-    const { currentStep, setCurrentStep } = usePageContext();
+export default function FullServiceSetup() {
+    const router = useRouter();
 
     function loadComponent(componentLink: string, componentDivId: string) {
         if (loaded) return;
@@ -18,9 +19,10 @@ export default function ConnectBankAccount() {
             handler = window.CheckComponent.create({
                 link: componentLink,
                 onEvent: (event: any, data: any) => {
-                    if (event === "check-component-company-connect-bank-account-complete") {
+                    console.log(event);
+                    if (event === "check-component-new-to-payroll-indicated") {
                         handler.close();
-                        setCurrentStep("team_setup");
+                        router.push('/selfservice')
                     }
                 }
             });
@@ -39,9 +41,12 @@ export default function ConnectBankAccount() {
 
     const instantiateComponent = async () => {
         const body = {
+            "signer_name": "Tony Stark",
+            "signer_title": "CEO",
             "email": "tony@checkhq.com"
         }
-        const componentLink = await fetchCompponentUrl("connect_bank_account", body);
+        const componentLink = await fetchCompponentUrl("setup", body);
+        console.log(componentLink);
         loadComponent(componentLink, 'my_component_holder');
     };
 
@@ -50,12 +55,13 @@ export default function ConnectBankAccount() {
         return () => {
             if (handler) {
                 handler.close();
+                loaded = false;
             }
         };
     }, []);
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen">
+        <div className="">
             <div id="my_component_holder" className="w-full h-[700px]" />
         </div>
     );
