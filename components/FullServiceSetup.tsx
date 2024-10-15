@@ -45,7 +45,7 @@ export default function FullServiceSetup() {
             "signer_title": "CEO",
             "email": "tony@checkhq.com"
         }
-        const componentLink = await fetchCompponentUrl("setup", body);
+        const componentLink = await fetchCompponentUrl("full_service_setup_submission", body);
         console.log(componentLink);
         loadComponent(componentLink, 'my_component_holder');
     };
