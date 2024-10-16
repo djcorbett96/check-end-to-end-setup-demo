@@ -1,15 +1,15 @@
 'use client'
 
 import { useEffect } from "react";
-import { fetchCompponentUrl } from "../utils/fetchComponentUrl";
-import { usePageContext } from "../utils/usePageContext";
+import { fetchCompponentUrl } from "@/lib/fetchComponentUrl";
+import { usePageContext } from "@/lib/usePageContext";
 
 let handler: any = undefined;
 let loaded: boolean = false;
 
 
 export default function ConnectBankAccount() {
-    const { currentStep, setCurrentStep } = usePageContext();
+    const { currentStep, setCurrentStep, completedSteps, setCompletedSteps } = usePageContext();
 
     function loadComponent(componentLink: string, componentDivId: string) {
         if (loaded) return;
@@ -20,7 +20,8 @@ export default function ConnectBankAccount() {
                 onEvent: (event: any, data: any) => {
                     if (event === "check-component-company-connect-bank-account-complete") {
                         handler.close();
-                        setCurrentStep("team_setup");
+                        setCompletedSteps([...completedSteps, currentStep])
+                        setCurrentStep(currentStep + 1)
                     }
                 }
             });
@@ -48,14 +49,17 @@ export default function ConnectBankAccount() {
     useEffect(() => {
         instantiateComponent();
         return () => {
+            console.log("this is a cleanup function")
             if (handler) {
+                console.log("closing handler")
                 handler.close();
+                loaded = false;
             }
         };
     }, []);
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen">
+        <div className="">
             <div id="my_component_holder" className="w-full h-[700px]" />
         </div>
     );

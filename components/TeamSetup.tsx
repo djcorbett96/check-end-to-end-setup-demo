@@ -1,15 +1,15 @@
 'use client'
 
 import { useEffect } from "react";
-import { fetchCompponentUrl } from "../utils/fetchComponentUrl";
-import { usePageContext } from "../utils/usePageContext";
+import { fetchCompponentUrl } from "@/lib/fetchComponentUrl";
+import { usePageContext } from "@/lib/usePageContext";
 
 let handler: any = undefined;
 let loaded: boolean = false;
 
 
-export default function TaxSetup() {
-    const { currentStep, setCurrentStep } = usePageContext();
+export default function TeamSetup() {
+    const { currentStep, setCurrentStep, completedSteps, setCompletedSteps } = usePageContext();
 
     function loadComponent(componentLink: string, componentDivId: string) {
         if (loaded) return;
@@ -18,10 +18,10 @@ export default function TaxSetup() {
             handler = window.CheckComponent.create({
                 link: componentLink,
                 onEvent: (event: any, data: any) => {
-                    console.log("tax event", event);
-                    if (event === "asdfdas") {
+                    if (event === "check-component-team-setup-complete") {
                         handler.close();
-                        setCurrentStep("filing_authorization");
+                        setCompletedSteps([...completedSteps, currentStep])
+                        setCurrentStep(currentStep + 1)
                     }
                 }
             });
@@ -40,11 +40,9 @@ export default function TaxSetup() {
 
     const instantiateComponent = async () => {
         const body = {
-            "signer_name": "Tony Stark",
-            "signer_title": "CEO",
             "email": "tony@checkhq.com"
         }
-        const componentLink = await fetchCompponentUrl("tax_setup", body);
+        const componentLink = await fetchCompponentUrl("team_setup", body);
         loadComponent(componentLink, 'my_component_holder');
     };
 
@@ -53,12 +51,13 @@ export default function TaxSetup() {
         return () => {
             if (handler) {
                 handler.close();
+                loaded = false;
             }
         };
     }, []);
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen">
+        <div className="">
             <div id="my_component_holder" className="w-full h-[700px]" />
         </div>
     );

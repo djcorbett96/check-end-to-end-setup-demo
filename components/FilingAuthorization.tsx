@@ -1,13 +1,16 @@
 'use client'
 
 import { useEffect } from "react";
-import { fetchCompponentUrl } from "../utils/fetchComponentUrl";
+import { fetchCompponentUrl } from "@/lib/fetchComponentUrl";
+import { usePageContext } from "@/lib/usePageContext";
 
 let handler: any = undefined;
 let loaded: boolean = false;
 
 
 export default function FilingAuthorization() {
+    const { currentStep, setCurrentStep, completedSteps, setCompletedSteps } = usePageContext();
+
     function loadComponent(componentLink: string, componentDivId: string) {
         if (loaded) return;
         loaded = true;
@@ -15,7 +18,11 @@ export default function FilingAuthorization() {
             handler = window.CheckComponent.create({
                 link: componentLink,
                 onEvent: (event: any, data: any) => {
-                    console.log("filing event", event);
+                    if (event === "check-component-company-filing-authorization-complete") {
+                        handler.close();
+                        setCompletedSteps([...completedSteps, currentStep])
+                        setCurrentStep(currentStep + 1)
+                    }
                 }
             });
             handler.open();
@@ -47,12 +54,13 @@ export default function FilingAuthorization() {
         return () => {
             if (handler) {
                 handler.close();
+                loaded = false;
             }
         };
     }, []);
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen">
+        <div className="">
             <div id="my_component_holder" className="w-full h-[700px]" />
         </div>
     );

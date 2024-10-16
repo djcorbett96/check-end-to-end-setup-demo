@@ -1,15 +1,16 @@
 'use client'
 
 import { useEffect } from "react";
-import { fetchCompponentUrl } from "../utils/fetchComponentUrl";
-import { useRouter } from 'next/navigation'
+import { fetchCompponentUrl } from "@/lib/fetchComponentUrl";
+import { usePageContext } from "@/lib/usePageContext";
+import { Button } from "@/components/ui/button";
 
 let handler: any = undefined;
 let loaded: boolean = false;
 
 
-export default function FullServiceSetup() {
-    const router = useRouter();
+export default function TaxSetup() {
+    const { currentStep, setCurrentStep, completedSteps, setCompletedSteps } = usePageContext();
 
     function loadComponent(componentLink: string, componentDivId: string) {
         if (loaded) return;
@@ -18,12 +19,11 @@ export default function FullServiceSetup() {
             handler = window.CheckComponent.create({
                 link: componentLink,
                 onEvent: (event: any, data: any) => {
-                    console.log(event);
-                    if (event === "check-component-new-to-payroll-indicated") {
-                        console.log("closing handler")
+                    console.log("tax event:", event)
+                    if (event === "check-component-company-tax-setup-complete") {
                         handler.close();
-                        console.log("handler closed");
-                        router.push('/selfservice')
+                        setCompletedSteps([...completedSteps, currentStep])
+                        setCurrentStep(currentStep + 1)
                     }
                 }
             });
@@ -46,23 +46,29 @@ export default function FullServiceSetup() {
             "signer_title": "CEO",
             "email": "tony@checkhq.com"
         }
-        const componentLink = await fetchCompponentUrl("setup", body);
-        console.log(componentLink);
+        const componentLink = await fetchCompponentUrl("tax_setup", body);
         loadComponent(componentLink, 'my_component_holder');
     };
 
     useEffect(() => {
         instantiateComponent();
         return () => {
+            console.log("this is a cleanup function")
             if (handler) {
+                console.log("closing handler")
                 handler.close();
+                loaded = false;
             }
         };
     }, []);
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen">
-            <div id="my_component_holder" className="w-full h-[700px]" />
+        <div className="flex flex-col items-center">
+            <div id="my_component_holder" className="w-full h-[600px]" />
+            <Button className="w-fit" onClick={() => {
+                setCompletedSteps([...completedSteps, currentStep])
+                setCurrentStep(currentStep + 1)
+            }}>Next Step</Button>
         </div>
     );
 };

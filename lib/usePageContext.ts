@@ -1,8 +1,10 @@
 import { createCtx } from './createContext';
 
 type PageContextType = {
-    currentStep: string | null;
-    setCurrentStep: (data: string) => void;
+    currentStep: number;
+    setCurrentStep: (data: number) => void;
+    completedSteps: number[];
+    setCompletedSteps: (data: number[]) => void;
 };
 
 // Setup LocatorProvider to pass the [selected, hovered, focused]Ids between Marker interactions and LocatorCard interactions

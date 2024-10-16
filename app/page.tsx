@@ -1,16 +1,20 @@
 'use client'
 
-import importScript from "./utils/importScript";
+import { useEffect, useState } from "react";
+import importScript from "@/lib/importScript";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function App() {
     importScript('https://cdn.checkhq.com/component-initialize.js');
+
     return (
         <main className="flex h-screen">
-            <div className="m-auto text-center">
-                <h1 className="font-bold text-3xl pb-4">Productized Setup Demo</h1>
-                <Link href="/fullservice">
-                    <button className="px-6 py-2 rounded-md bg-[#0053B8] text-white font-bold hover:bg-[#1E293B]">Begin</button>
+            <div className="m-auto text-center items-center flex flex-col gap-4 max-w-lg">
+                <h1 className="font-semibold text-3xl pb-4">Welcome DJ's Test Co 3!</h1>
+                <h2 className="text-xl pb-4">Let's start by learning more about your business.</h2>
+                <Link href="/fullservice" className="w-fit">
+                    <Button>Begin</Button>
                 </Link>
             </div>
         </main>
